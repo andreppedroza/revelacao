@@ -1,12 +1,26 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Spin N Win</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/main.css">
+  <head>
+    <title>Revelação do Sexo</title>
+    <link rel="stylesheet" href="css/main.css" />
     <script src="js/phaser.min.js"></script>
     <script src="js/main.js"></script>
-</head>
-<body>
-</body>
+  </head>
+  <body>
+    <span style="display: block; height: 0; opacity: 0;">fix font bug</span>
+    <div id="background">
+      <video preload class="base video hide" id="ballons">
+        <source src="videos/ballons.webm" type="video/webm" />
+      </video>
+      <video preload class="base video hide" id="ink">
+        <source src="videos/ink.webm" type="video/webm" />
+      </video>
+      <video preload class="base video hide" id="smoke">
+        <source src="videos/smoke.webm" type="video/webm" />
+      </video>
+      <div class="base hide" id="message-container">
+        <span id="message"></span>
+      </div>
+    </div>
+  </body>
 </html>

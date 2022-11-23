@@ -1,15 +1,114 @@
+@font-face {
+  font-family: 'Bangers';
+  src: url('/fonts/bangers.ttf');
+}
+
 body {
-    background: #000000;
-    padding: 0px;
-    margin: 0px;
-    font-family: 'Rajdhani', sans-serif;
+  background: white;
+  padding: 0px;
+  margin: 0px;
+  font-family: Bangers;
+}
+
+#background {
+  background: linear-gradient(
+    120deg,
+    rgba(239, 170, 196, 0.75) 30%,
+    rgba(123, 223, 242, 1) 100%
+  );
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.smoke-color {
+  background: linear-gradient(
+    120deg,
+    rgba(239, 170, 196, 1) 30%,
+    rgba(123, 223, 242, 1) 100%
+  );
+}
+
+.ink-color {
+  background: #fcff3d;
+}
+
+.ballons-color {
+  background: linear-gradient(
+    240deg,
+    rgba(123, 223, 242, 1) 30%,
+    rgba(239, 170, 196, 1) 70%
+  );
+}
+
+.base {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  margin: 0;
+  top: 0;
+  left: 0;
+}
+
+.video {
+  object-fit: fill;
+  z-index: 10;
+}
+
+.hide {
+  display: none;
+}
+
+.fadin {
+  animation: fadeIn 1s;
+}
+
+.fadout {
+  animation: fadeOut 1s;
+}
+
+#message-container {
+  z-index: 20;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+#message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 60px;
+  text-align: center;
+  color: black;
+  -webkit-text-fill-color: white;
+  -webkit-text-stroke-color: #042b32;
+  -webkit-text-stroke-width: 2px;
 }
 
 canvas {
-    display: block;
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  z-index: 1;
+  display: block;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
