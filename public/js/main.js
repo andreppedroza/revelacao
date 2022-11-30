@@ -207,3 +207,29 @@ function typeMessage (msg, i = 0) {
     }, 5000)
   }
 }
+
+
+function createQRCodes () {
+  var qrcode1 = new QRCode("player-1-content", {
+    text: `${window.location.origin}/control.html?player=1`,
+    width: 150,
+    height: 150,
+    colorDark : "#000000",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+});
+
+var qrcode2 = new QRCode("player-2-content", {
+  text: `${window.location.origin}/control.html?player=2`,
+  width: 150,
+  height: 150,
+  colorDark : "#000000",
+  colorLight : "#ffffff",
+  correctLevel : QRCode.CorrectLevel.H
+});
+}
+
+
+window.addEventListener("load", function() {
+  createQRCodes();
+});

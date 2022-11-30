@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
   <head>
     <title>Revelação do Sexo</title>
     <link rel="stylesheet" href="css/main.css" />
     <script src="js/phaser.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/socket.io.min.js"></script>
+    <script src="js/qrcode.min.js"></script>
     <script>
       var socket = io();
     </script>
@@ -24,6 +25,14 @@
       </video>
       <div class="base hide" id="message-container">
         <span id="message"></span>
+      </div>
+      <div class="" id="player-1">
+        <h1 class="card-title">Papai</h1>
+        <div class="card-content" id="player-1-content"></div>
+      </div>
+      <div class="" id="player-2">
+        <h1 class="card-title">Mamãe</h1>
+        <div class="card-content" id="player-2-content"></div>
       </div>
     </div>
   </body>

@@ -112,3 +112,48 @@ canvas {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+#player-1 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  width: 250px;
+  height: 250px;
+  background-color: rgba(123, 223, 242, 1);
+  margin: 5%;
+  border-radius: 5%;
+  border-width: 5px;
+  border-style: solid;
+  border-color: white;
+}
+
+#player-2 {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 10;
+  width: 250px;
+  height: 250px;
+  background-color: rgba(239, 170, 196, 1);
+  margin: 5%;
+  border-radius: 5%;
+  border-width: 5px;
+  border-style: solid;
+  border-color: white;
+}
+
+.card-title {
+  width: 100%;
+  text-align: center;
+  color: black;
+  -webkit-text-fill-color: white;
+  -webkit-text-stroke-color: #042b32;
+  -webkit-text-stroke-width: 0.5px;
+}
+
+.card-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

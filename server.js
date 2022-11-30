@@ -19,5 +19,5 @@ io.on('connection', (socket) => {
 
 server.listen(3000, ip.address(), () => {
     console.log(`Server started at ${ip.address()}:3000`);
-    open(`http://${ip.address()}:3000`);
+    // open(`http://${ip.address()}:3000`);
 });
