@@ -143,13 +143,21 @@ canvas {
   border-color: white;
 }
 
+#player-1 .card-title {
+  color: #1B8094;
+  -webkit-text-stroke-color: #1B8094;
+}
+
+#player-2 .card-title {
+  color: #BC205B;
+  -webkit-text-stroke-color: #BC205B;
+}
+
 .card-title {
   width: 100%;
   text-align: center;
-  color: black;
   -webkit-text-fill-color: white;
-  -webkit-text-stroke-color: #042b32;
-  -webkit-text-stroke-width: 0.5px;
+  -webkit-text-stroke-width: 1px;
 }
 
 .card-content {
