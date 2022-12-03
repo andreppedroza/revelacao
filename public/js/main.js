@@ -39,12 +39,19 @@ function whoReveals (value) {
     data.playing = 2
     document.getElementById('player-1-content-message').innerHTML = value
     socket.emit('message', 'enable-2')
+    document.getElementById('player-2-content-message').innerHTML = 'Sua Vez'
   } else {
     data.player2.luck = value
     document.getElementById('player-2-content-message').innerHTML = value
-    if (data.player1.luck > data.player2.luck)
+    if (data.player1.luck >= data.player2.luck) {
       socket.emit('message', 'enable-1')
-    else socket.emit('message', 'enable-2')
+      document.getElementById('player-1-content-message').innerHTML = 'Ganhou'
+      document.getElementById('player-2-content-message').innerHTML = 'Perdeu'
+    } else {
+      socket.emit('message', 'enable-2')
+      document.getElementById('player-2-content-message').innerHTML = 'Ganhou'
+      document.getElementById('player-1-content-message').innerHTML = 'Perdeu'
+    }
     mode = 'reveal'
   }
 }
@@ -105,13 +112,23 @@ window.onload = function () {
         document.getElementById('player-1-content').innerHTML =
           '<span id="player-1-content-message" class="player-content-message">OK!</span>'
         data.player1.status = 1
-        if (data.player2.status) socket.emit('message', 'enable-1')
+        if (data.player2.status) {
+          socket.emit('message', 'enable-1')
+          document.getElementById('player-1-content-message').innerHTML =
+            'Sua Vez'
+          document.getElementById('player-2-content-message').innerHTML = ''
+        }
         break
       case 'connect-2':
         document.getElementById('player-2-content').innerHTML =
           '<span id="player-2-content-message" class="player-content-message">OK!</span>'
         data.player2.status = 1
-        if (data.player1.status) socket.emit('message', 'enable-1')
+        if (data.player1.status) {
+          socket.emit('message', 'enable-1')
+          document.getElementById('player-1-content-message').innerHTML =
+            'Sua Vez'
+          document.getElementById('player-2-content-message').innerHTML = ''
+        }
         break
       case 'spin':
         spinWheel()
@@ -260,12 +277,13 @@ class playGame extends Phaser.Scene {
           if (mode === 'luck') {
             prize = prize === 7 ? 1 : prize
             this.canSpin = true
+            console.log(prize)
             if (data.playing === 2 && prize === data.player1.luck) {
-              if (prize === 6) {
-                whoReveals(prize - 1)
+              if (prize === 1) {
+                whoReveals(prize + 1)
                 return
               } else {
-                whoReveals(prize + 1)
+                whoReveals(prize - 1)
                 return
               }
             }
@@ -336,7 +354,8 @@ function typeMessage (msg, i = 0) {
         socket.emit('message', 'enable-1')
         data.player1.luck = 0
         data.player2.luck = 0
-        document.getElementById('player-1-content-message').innerHTML = ''
+        document.getElementById('player-1-content-message').innerHTML =
+          'Sua Vez'
         document.getElementById('player-2-content-message').innerHTML = ''
         data.playing = 1
       }, 1000)
