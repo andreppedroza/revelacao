@@ -1,12 +1,36 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Revelação do Sexo - Controle</title>
-</head>
-<body>
-    
-</body>
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="js/socket.io.min.js"></script>
+    <script>
+      var socket
+      window.onload = function () {
+        socket = io(`ws://${window.location.host}/`)
+        var player = new URLSearchParams(window.location.search).get('player')
+        var button = document.getElementById('wheel-button')
+        document
+          .getElementById('control-container')
+          .classList.add(`control-player-${player}`)
+        socket.emit('message', `connect-${player}`)
+        socket.on('message', msg => {
+          if (msg === `enable-${player}`) button.disabled = false
+        })
+
+        button.addEventListener('click', () => {
+          socket.emit('message', `spin`)
+          button.disabled = true
+        })
+      }
+    </script>
+  </head>
+  <body>
+    <div id="control-container">
+      <button id="wheel-button" disabled>Aperte para Girar</button>
+    </div>
+  </body>
 </html>

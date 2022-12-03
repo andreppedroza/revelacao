@@ -1,5 +1,7 @@
 // the game itself
 var game
+var socket
+var spinWheel
 
 var messages = {
   ink: 'Amarelo é a cor da ansiedade! 🤣🤣🤣',
@@ -15,6 +17,36 @@ var attempts = {
     [256, 212, 40],
     [0, 0, 0]
   ]
+}
+
+var mode = 'luck'
+
+var data = {
+  player1: {
+    status: 0,
+    luck: 0
+  },
+  player2: {
+    status: 0,
+    luck: 0
+  },
+  playing: 1
+}
+
+function whoReveals (value) {
+  if (data.playing === 1) {
+    data.player1.luck = value
+    data.playing = 2
+    document.getElementById('player-1-content-message').innerHTML = value
+    socket.emit('message', 'enable-2')
+  } else {
+    data.player2.luck = value
+    document.getElementById('player-2-content-message').innerHTML = value
+    if (data.player1.luck > data.player2.luck)
+      socket.emit('message', 'enable-1')
+    else socket.emit('message', 'enable-2')
+    mode = 'reveal'
+  }
 }
 
 function createQRCodes () {
@@ -64,6 +96,28 @@ window.onload = function () {
   window.focus()
   resize()
   window.addEventListener('resize', resize, false)
+
+  socket = io(`ws://${window.location.host}/`)
+
+  socket.on('message', msg => {
+    switch (msg) {
+      case 'connect-1':
+        document.getElementById('player-1-content').innerHTML =
+          '<span id="player-1-content-message" class="player-content-message">OK!</span>'
+        data.player1.status = 1
+        if (data.player2.status) socket.emit('message', 'enable-1')
+        break
+      case 'connect-2':
+        document.getElementById('player-2-content').innerHTML =
+          '<span id="player-2-content-message" class="player-content-message">OK!</span>'
+        data.player2.status = 1
+        if (data.player1.status) socket.emit('message', 'enable-1')
+        break
+      case 'spin':
+        spinWheel()
+        break
+    }
+  })
 }
 
 // PlayGame scene
@@ -71,6 +125,7 @@ class playGame extends Phaser.Scene {
   // constructor
   constructor () {
     super('PlayGame')
+    spinWheel = this.spinWheel.bind(this)
   }
 
   // method to be executed when the scene preloads
@@ -144,16 +199,29 @@ class playGame extends Phaser.Scene {
       // then will rotate by a random number from 0 to 360 degrees. This is the actual spin
       // var degrees = Phaser.Math.Between(0, 360)
 
-      var degrees = attempts.degrees[attempts.round][Phaser.Math.Between(0, 2)]
+      var degrees =
+        mode !== 'luck'
+          ? attempts.degrees[attempts.round][Phaser.Math.Between(0, 2)]
+          : Phaser.Math.Between(0, 360)
 
       // before the wheel ends spinning, we already know the prize according to "degrees" rotation and the number of slices
       var prize = 7 - Math.floor((degrees + 28) / 60)
       // now the wheel cannot spin because it's already spinning
+
+      if (mode === 'luck') {
+        if (data.playing === 2 && prize === data.player1.luck) {
+          if (prize === 6) {
+            degrees -= 60
+          } else {
+            degrees += 60
+          }
+        }
+      }
       this.canSpin = false
 
       // animation tweeen for the spin: duration 3s, will rotate by (360 * rounds + degrees) degrees
       // the quadratic easing will simulate friction
-      if (attempts.round >= 3) {
+      if (attempts.round >= 3 && mode === 'reveal') {
         setTimeout(() => {
           document.getElementById('smoke-container').className = 'base fadin'
           setTimeout(() => {
@@ -161,7 +229,7 @@ class playGame extends Phaser.Scene {
               'base flex'
             setTimeout(() => {
               typeMessage(
-                ' de propósito para lembrar que momentos como esse devem ser aproveitados longe das telas...'
+                ' propositalmente, para lembrar que momentos como esse devem ser aproveitados longe das telinhas...'
               )
             }, 3000)
           }, 3000)
@@ -173,10 +241,13 @@ class playGame extends Phaser.Scene {
         targets: [this.wheel],
 
         // angle destination
-        angle: attempts.round <= 2 ? 360 * rounds + degrees : 10000000,
+        angle:
+          attempts.round <= 2 || mode === 'luck'
+            ? 360 * rounds + degrees
+            : 10000000,
 
         // tween duration
-        duration: attempts.round <= 2 ? 3000 : 20000,
+        duration: attempts.round <= 2 || mode === 'luck' ? 3000 : 20000,
 
         // tween easing
         ease: 'Cubic.easeOut',
@@ -186,26 +257,44 @@ class playGame extends Phaser.Scene {
 
         // function to be executed once the tween has been completed
         onComplete: function () {
-          if (attempts.round <= 2) {
-            var result = ['ink', 'ballons', 'smoke'][prize % 3]
-            var video = document.getElementById(result)
-            if (video) {
-              video.classList.remove('hide')
-              video.play().then(() => {
-                setTimeout(() => {
-                  document.getElementById(
-                    'message-container'
-                  ).className = `base fadin ${result}-color`
-                  setTimeout(() => {
-                    typeMessage(messages[result])
-                    video.classList.add('hide')
-                    video.pause()
-                    video.currentTime = 0
-                  }, 1000)
-                  this.canSpin = true
-                }, 5000)
-              })
+          if (mode === 'luck') {
+            prize = prize === 7 ? 1 : prize
+            this.canSpin = true
+            if (data.playing === 2 && prize === data.player1.luck) {
+              if (prize === 6) {
+                whoReveals(prize - 1)
+                return
+              } else {
+                whoReveals(prize + 1)
+                return
+              }
             }
+            whoReveals(prize)
+          } else {
+            if (attempts.round <= 2) {
+              setTimeout(() => {
+                var result = ['ink', 'ballons', 'smoke'][prize % 3]
+                var video = document.getElementById(result)
+                if (video) {
+                  video.classList.remove('hide')
+                  video.play().then(() => {
+                    setTimeout(() => {
+                      document.getElementById(
+                        'message-container'
+                      ).className = `base fadin ${result}-color`
+                      setTimeout(() => {
+                        typeMessage(messages[result])
+                        video.classList.add('hide')
+                        video.pause()
+                        video.currentTime = 0
+                        this.canSpin = true
+                      }, 1000)
+                    }, 5000)
+                  })
+                }
+              }, 1000)
+            }
+            mode = 'luck'
           }
         }
       })
@@ -244,6 +333,12 @@ function typeMessage (msg, i = 0) {
         document.getElementById('message').innerHTML = ''
         container.classList.add('hide')
         attempts.round = attempts.round >= 3 ? 0 : attempts.round + 1
+        socket.emit('message', 'enable-1')
+        data.player1.luck = 0
+        data.player2.luck = 0
+        document.getElementById('player-1-content-message').innerHTML = ''
+        document.getElementById('player-2-content-message').innerHTML = ''
+        data.playing = 1
       }, 1000)
     }, 5000)
   }
