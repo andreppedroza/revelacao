@@ -12,12 +12,34 @@ var attempts = {
   degrees: [
     [20, 190, 349],
     [306, 120, 96],
-    [256, 212, 40]
+    [256, 212, 40],
+    [0, 0, 0]
   ]
+}
+
+function createQRCodes () {
+  var qrcode1 = new QRCode('player-1-content', {
+    text: `${window.location.origin}/control.html?player=1`,
+    width: 150,
+    height: 150,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  })
+
+  var qrcode2 = new QRCode('player-2-content', {
+    text: `${window.location.origin}/control.html?player=2`,
+    width: 150,
+    height: 150,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  })
 }
 
 // once the window loads...
 window.onload = function () {
+  createQRCodes()
   // game configuration object
   var gameConfig = {
     // render type
@@ -123,7 +145,6 @@ class playGame extends Phaser.Scene {
       // var degrees = Phaser.Math.Between(0, 360)
 
       var degrees = attempts.degrees[attempts.round][Phaser.Math.Between(0, 2)]
-      attempts.round = attempts.round >= 2 ? 0 : attempts.round + 1
 
       // before the wheel ends spinning, we already know the prize according to "degrees" rotation and the number of slices
       var prize = 7 - Math.floor((degrees + 28) / 60)
@@ -132,15 +153,30 @@ class playGame extends Phaser.Scene {
 
       // animation tweeen for the spin: duration 3s, will rotate by (360 * rounds + degrees) degrees
       // the quadratic easing will simulate friction
+      if (attempts.round >= 3) {
+        setTimeout(() => {
+          document.getElementById('smoke-container').className = 'base fadin'
+          setTimeout(() => {
+            document.getElementById('message-error-container').className =
+              'base flex'
+            setTimeout(() => {
+              typeMessage(
+                ' de propósito para lembrar que momentos como esse devem ser aproveitados longe das telas...'
+              )
+            }, 3000)
+          }, 3000)
+        }, 3000)
+      }
+
       this.tweens.add({
         // adding the wheel to tween targets
         targets: [this.wheel],
 
         // angle destination
-        angle: 360 * rounds + degrees,
+        angle: attempts.round <= 2 ? 360 * rounds + degrees : 10000000,
 
         // tween duration
-        duration: 3000,
+        duration: attempts.round <= 2 ? 3000 : 20000,
 
         // tween easing
         ease: 'Cubic.easeOut',
@@ -149,25 +185,27 @@ class playGame extends Phaser.Scene {
         callbackScope: this,
 
         // function to be executed once the tween has been completed
-        onComplete: function (tween) {
-          var result = ['ink', 'ballons', 'smoke'][prize % 3]
-          var video = document.getElementById(result)
-          if (video) {
-            video.classList.remove('hide')
-            video.play().then(() => {
-              setTimeout(() => {
-                document.getElementById(
-                  'message-container'
-                ).className = `base fadin ${result}-color`
+        onComplete: function () {
+          if (attempts.round <= 2) {
+            var result = ['ink', 'ballons', 'smoke'][prize % 3]
+            var video = document.getElementById(result)
+            if (video) {
+              video.classList.remove('hide')
+              video.play().then(() => {
                 setTimeout(() => {
-                  typeMessage(messages[result])
-                  video.classList.add('hide')
-                  video.pause()
-                  video.currentTime = 0
-                }, 1000)
-                this.canSpin = true
-              }, 5000)
-            })
+                  document.getElementById(
+                    'message-container'
+                  ).className = `base fadin ${result}-color`
+                  setTimeout(() => {
+                    typeMessage(messages[result])
+                    video.classList.add('hide')
+                    video.pause()
+                    video.currentTime = 0
+                  }, 1000)
+                  this.canSpin = true
+                }, 5000)
+              })
+            }
           }
         }
       })
@@ -193,43 +231,20 @@ function resize () {
 
 function typeMessage (msg, i = 0) {
   if (i < msg.length) {
-    document.getElementById('message').innerHTML += msg.charAt(i)
+    document.getElementById(
+      attempts.round <= 2 ? 'message' : 'message-error'
+    ).innerHTML += msg.charAt(i)
     i++
     setTimeout(() => typeMessage(msg, i++), 50)
-  } else {
+  } else if (attempts.round <= 2) {
     var container = document.getElementById('message-container')
     setTimeout(() => {
       container.classList.add('fadout')
       setTimeout(() => {
         document.getElementById('message').innerHTML = ''
         container.classList.add('hide')
+        attempts.round = attempts.round >= 3 ? 0 : attempts.round + 1
       }, 1000)
     }, 5000)
   }
 }
-
-
-function createQRCodes () {
-  var qrcode1 = new QRCode("player-1-content", {
-    text: `${window.location.origin}/control.html?player=1`,
-    width: 150,
-    height: 150,
-    colorDark : "#000000",
-    colorLight : "#ffffff",
-    correctLevel : QRCode.CorrectLevel.H
-});
-
-var qrcode2 = new QRCode("player-2-content", {
-  text: `${window.location.origin}/control.html?player=2`,
-  width: 150,
-  height: 150,
-  colorDark : "#000000",
-  colorLight : "#ffffff",
-  correctLevel : QRCode.CorrectLevel.H
-});
-}
-
-
-window.addEventListener("load", function() {
-  createQRCodes();
-});

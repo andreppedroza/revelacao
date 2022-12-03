@@ -117,7 +117,7 @@ canvas {
   position: absolute;
   bottom: 0;
   left: 0;
-  z-index: 10;
+  z-index: 2;
   width: 250px;
   height: 250px;
   background-color: rgba(123, 223, 242, 1);
@@ -132,7 +132,7 @@ canvas {
   position: absolute;
   bottom: 0;
   right: 0;
-  z-index: 10;
+  z-index: 2;
   width: 250px;
   height: 250px;
   background-color: rgba(239, 170, 196, 1);
@@ -144,13 +144,13 @@ canvas {
 }
 
 #player-1 .card-title {
-  color: #1B8094;
-  -webkit-text-stroke-color: #1B8094;
+  color: #1b8094;
+  -webkit-text-stroke-color: #1b8094;
 }
 
 #player-2 .card-title {
-  color: #BC205B;
-  -webkit-text-stroke-color: #BC205B;
+  color: #bc205b;
+  -webkit-text-stroke-color: #bc205b;
 }
 
 .card-title {
@@ -164,4 +164,27 @@ canvas {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+#smoke-container {
+  z-index: 9;
+}
+
+#smoke-wheel {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+  opacity: 50%;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#message-error-container {
+  z-index: 20;
+  background-color: #252528;
 }

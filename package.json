@@ -2,7 +2,7 @@
   "name": "revelacao",
   "version": "1.0.0",
   "description": "Built with [Phaser.js](https://phaser.io/) <p align=\"center\"> <img src=\"./images/wheel.svg\" width=\"300\"> </p>",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "node server"
   },
